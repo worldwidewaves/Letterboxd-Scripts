@@ -41,7 +41,7 @@ function updateRatingElt(site) {
             ratingData.origRating !== 0 && !isNaN(ratingData.origRating)) {
             if (localStorage.origRatingsMode === "true") {
                 ratingInnerElt.removeAttribute("class");
-                ratingInnerElt.textContent = ratingData.origRating
+                ratingInnerElt.textContent = parseFloat(ratingData.origRating).toFixed(1);
             } else {
                 ratingInnerElt.className = "rating rated-" +
                     Math.round(ratingData.oneToTenRating);
@@ -76,6 +76,8 @@ function createRatingsSection(callback) {
                     section.ratings-external span {\
                         text-align: right;\
                         position: absolute;\
+                        font-size: 14px;\
+                        margin-top: -3px;\
                         right: 0;\
                         color: #6C3;\
                     }\
@@ -207,7 +209,7 @@ function fillRatingsSection() {
                             match(/<a.*href="(.*?)".*>See all \d+ reviews/)[1];
 
                         updateRatingData("Metascore", metaRating,
-                            metaRating / 10, metaUrl);
+                            metaRating, metaUrl);
                     }
                 });
             } else {
