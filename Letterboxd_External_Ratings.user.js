@@ -5,6 +5,7 @@
 // @copyright   2015, Ramón Guijarro (http://soyguijarro.com)
 // @homepageURL https://github.com/soyguijarro/userscripts
 // @supportURL  https://github.com/soyguijarro/userscripts/issues
+// @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
 // @version     1.8
