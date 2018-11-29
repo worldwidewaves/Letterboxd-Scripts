@@ -5,7 +5,6 @@
 // @copyright   2015, Ramón Guijarro (http://soyguijarro.com)
 // @homepageURL https://github.com/soyguijarro/userscripts
 // @supportURL  https://github.com/soyguijarro/userscripts/issues
-// @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
 // @version     1.8
@@ -41,8 +40,7 @@ function updateRatingElt(site) {
             ratingData.origRating !== 0 && !isNaN(ratingData.origRating)) {
             if (localStorage.origRatingsMode === "true") {
                 ratingInnerElt.removeAttribute("class");
-                ratingInnerElt.textContent = ratingData.origRating +
-                    ((ratingData.origRatingMax) ? ("/" + ratingData.origRatingMax) : "%");
+                ratingInnerElt.textContent = ratingData.origRating
             } else {
                 ratingInnerElt.className = "rating rated-" +
                     Math.round(ratingData.oneToTenRating);
@@ -65,7 +63,8 @@ function createRatingsSection(callback) {
         ratingElt,
         ratingInnerElt,
         cssRules = "section.ratings-external {\
-                        margin-top: 20px;\
+                        margin-top: -115px;\
+                        bottom: -215px;\
                     }\
                     section.ratings-external a {\
                         display: block;\
@@ -192,7 +191,7 @@ function fillRatingsSection() {
                 metaRatingElt = ratingsElt.querySelector(".metacriticScore span");
 
             if (metaRatingElt) {
-                metaRating = parseFloat(metaRatingElt.textContent);
+                metaRating = parseFloat(metaRatingElt.textContent)/10;
 
                 GM_xmlhttpRequest({
                     method: "GET",
