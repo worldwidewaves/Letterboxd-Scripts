@@ -179,7 +179,7 @@ function fillRatingsSection() {
                 imdbRatingElt = ratingsElt.querySelector("span[itemprop=ratingValue]");
 
             if (imdbRatingElt) {
-                imdbRating = parseFloat(imdbRatingElt.textContent);
+                imdbRating = parseFloat((imdbRatingElt.textContent).replace(',', '.'));
                 updateRatingData("IMDb", imdbRating, imdbRating, imdbUrl);
             } else {
                 updateRatingData("IMDb", null);
