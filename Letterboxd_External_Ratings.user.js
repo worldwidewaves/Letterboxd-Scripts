@@ -81,9 +81,9 @@ function createRatingsSection(callback) {
                     }\
                     section.ratings-external span.spinner {\
                         background: url('" + getSpinnerImageUrl() + "');\
-                        background-size: 18px;\
-                        height: 18px;\
-                        width: 18px;\
+                        background-size: 14px;\
+                        height: 14px;\
+                        width: 14px;\
                         margin: 0 0;\
                     }";
 
