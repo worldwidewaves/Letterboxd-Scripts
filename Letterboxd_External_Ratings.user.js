@@ -34,6 +34,10 @@ function updateRatingElt(site) {
         ratingInnerElt = ratingElt.firstElementChild,
         ratingData = ratingsData[site];
 
+        //Changes the Letterboxd rating to base 10
+        document.getElementsByClassName("tooltip display-rating")[0].innerText = parseFloat(Math.round(document.querySelector("[itemprop~=ratingValue][content]").content * 10) / 10).toFixed(1);
+
+
     if (ratingData.isLoaded) {
         ratingInnerElt.classList.remove("spinner");
 
@@ -64,8 +68,7 @@ function createRatingsSection(callback) {
         ratingElt,
         ratingInnerElt,
         cssRules = "section.ratings-external {\
-                        margin-top: -115px;\
-                        bottom: -215px;\
+                        margin-top: 20px;\
                     }\
                     section.ratings-external a {\
                         display: block;\
@@ -147,7 +150,7 @@ function createRatingsSection(callback) {
     ratingsSectionElt.appendChild(modeToggleElt);
 
     // Insert section in page
-    sidebarElt.insertBefore(ratingsSectionElt, sidebarElt.lastElementChild);
+    sidebarElt.insertBefore(ratingsSectionElt, sidebarElt.lastElementChild.nextSibling);
     GM_addStyle(cssRules);
 
     callback();
