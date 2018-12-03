@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     1.8
+// @version     1.9
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -34,9 +34,10 @@ function updateRatingElt(site) {
         ratingInnerElt = ratingElt.firstElementChild,
         ratingData = ratingsData[site];
 
-        //Changes the Letterboxd rating to base 10
+    //Changes the Letterboxd rating to base 10
+    if(document.getElementsByClassName("tooltip display-rating")[0]){
         document.getElementsByClassName("tooltip display-rating")[0].innerText = parseFloat(Math.round(document.querySelector("[itemprop~=ratingValue][content]").content * 10) / 10).toFixed(1);
-
+    }
 
     if (ratingData.isLoaded) {
         ratingInnerElt.classList.remove("spinner");
