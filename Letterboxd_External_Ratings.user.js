@@ -46,7 +46,11 @@ function updateRatingElt(site) {
             ratingData.origRating !== 0 && !isNaN(ratingData.origRating)) {
             if (localStorage.origRatingsMode === "true") {
                 ratingInnerElt.removeAttribute("class");
-                ratingInnerElt.textContent = parseFloat(ratingData.origRating).toFixed(1);
+                if(ratingData.origRatingMax){
+                    ratingInnerElt.textContent = parseFloat(ratingData.origRating).toFixed(1);
+                } else{
+                    ratingInnerElt.textContent = parseFloat(ratingData.origRating) + "%";
+                }
             } else {
                 ratingInnerElt.className = "rating rated-" +
                     Math.round(ratingData.oneToTenRating);
@@ -161,11 +165,17 @@ function fillRatingsSection() {
     var moreDetailsElt = document.querySelector("section.col-main p.text-link"),
         imdbIdMatch = moreDetailsElt.innerHTML.
             match(/http:\/\/www\.imdb.com\/title\/tt(\d+)\//),
-        rottenApiReqBaseUrl = "http://api.rottentomatoes.com/api/public/v1.0/",
-        rottenApiReqParams = "movie_alias.json?type=imdb&id=",
-        rottenApiReqUrl,
         imdbUrl,
-        imdbId;
+        imdbId,
+        rottenUrl= "https://www.rottentomatoes.com";
+
+
+
+
+
+
+
+
 
     function updateRatingData(site, origRating, oneToTenRating, url) {
         ratingsData[site].origRating = origRating;
@@ -231,32 +241,35 @@ function fillRatingsSection() {
     }
 
     function getRottenRating(res) {
-        var json = JSON.parse(res.responseText),
-            rottenId,
-            rottenUrl,
-            rottenRating;
+        var filmTitle = document.querySelector("#featured-film-header h1").textContent,
+            i= 0;
+        for(i; i < filmTitle.length; i++) {
+            filmTitle = filmTitle.replace(" ", "_").replace(" ", "_").replace("’", "").replace(":", "").replace(".", "").replace(";", "");
+        }
+        var rottenUrl = encodeURI("https://www.rottentomatoes.com/m/" + filmTitle);
 
-        if (json) {
-            if (json.id && json.ratings && !json.error) {
-                rottenUrl = "http://www.rottentomatoes.com/m/" + json.id;
-                rottenRating = json.ratings.critics_score;
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: rottenUrl,
+            onload: function(res){
+                var parser = new DOMParser(),
+                    dom = parser.parseFromString(res.responseText, "text/html"),
+                    rottenRating = 1;
+                rottenRating= dom.getElementsByClassName("meter-value")[0].innerText.replace("%", "");
 
                 if (rottenRating > 0) {
                     updateRatingData("Tomatometer", rottenRating,
-                        rottenRating / 10, rottenUrl);
+                    rottenRating / 10, rottenUrl);
                 } else {
                     updateRatingData("Tomatometer", null);
                 }
-            } else {
-                updateRatingData("Tomatometer", null);
             }
-        }
+       });
     }
 
     if (imdbIdMatch) {
         imdbUrl = imdbIdMatch[0];
         imdbId = imdbIdMatch[1];
-        rottenApiReqUrl = rottenApiReqBaseUrl + rottenApiReqParams + imdbId;
 
         GM_xmlhttpRequest({
             method: "GET",
@@ -266,7 +279,7 @@ function fillRatingsSection() {
 
         GM_xmlhttpRequest({
             method: "GET",
-            url: rottenApiReqUrl,
+            url: rottenUrl,
             onload: getRottenRating
         });
     } else {
