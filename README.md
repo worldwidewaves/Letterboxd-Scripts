@@ -1,4 +1,4 @@
-# User scripts [Letterboxd](http://letterboxd.com/)
+# User scripts for [Letterboxd](http://letterboxd.com/)
 
 Repository of Letterboxd scripts written by [soyguijarro](https://github.com/soyguijarro) and edited by me. These are little pieces of software that extend or modify the behavior or appearance of certain web pages. They need to be used with a user script manager, which is an add-on or extension for web browsers (check the [installation section](#installation)).
 
