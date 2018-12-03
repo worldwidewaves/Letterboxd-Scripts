@@ -28,16 +28,12 @@ var ratingsData = { "IMDb": {origRatingMax: 10, isLoaded: false},
                     "Metascore": {origRatingMax: 100, isLoaded: false},
                     "Tomatometer": {isLoaded: false} };
 
+
 function updateRatingElt(site) {
     var ratingElts = document.querySelectorAll("section.ratings-external a"),
         ratingElt = ratingElts[Object.keys(ratingsData).indexOf(site)],
         ratingInnerElt = ratingElt.firstElementChild,
         ratingData = ratingsData[site];
-
-    //Changes the Letterboxd rating to base 10
-    if(document.getElementsByClassName("tooltip display-rating")[0]){
-        document.getElementsByClassName("tooltip display-rating")[0].innerText = parseFloat(Math.round(document.querySelector("[itemprop~=ratingValue][content]").content * 10) / 10).toFixed(1);
-    }
 
     if (ratingData.isLoaded) {
         ratingInnerElt.classList.remove("spinner");
@@ -168,14 +164,6 @@ function fillRatingsSection() {
         imdbUrl,
         imdbId,
         rottenUrl= "https://www.rottentomatoes.com";
-
-
-
-
-
-
-
-
 
     function updateRatingData(site, origRating, oneToTenRating, url) {
         ratingsData[site].origRating = origRating;
