@@ -1,4 +1,4 @@
-﻿// ==UserScript==
+// ==UserScript==
 // @name        Letterboxd Extra Profile Stats
 // @namespace   https://github.com/soyguijarro/userscripts
 // @description Adds average number of films watched per month and per week to profile pages
@@ -8,20 +8,21 @@
 // @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_Extra_Profile_Stats.user.js
 // @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     1.5
-// @include     /^*://letterboxd.com/\w+/#?$/
-// @exclude     /^*://letterboxd.com/films//
-// @exclude     /^*://letterboxd.com/lists//
-// @exclude     /^*://letterboxd.com/people//
-// @exclude     /^*://letterboxd.com/search//
-// @exclude     /^*://letterboxd.com/settings//
-// @exclude     /^*://letterboxd.com/activity//
-// @exclude     /^*://letterboxd.com/invitations//
-// @exclude     /^*://letterboxd.com/about//
-// @exclude     /^*://letterboxd.com/pro//
-// @exclude     /^*://letterboxd.com/welcome//
-// @exclude     /^*://letterboxd.com/contact//
-// @exclude     /^*://letterboxd.com/201\d//
+// @version     1.6
+// @include     *://letterboxd.com/*/
+// @exclude     *://letterboxd.com/*/*/
+// @exclude     *://letterboxd.com/films/
+// @exclude     *://letterboxd.com/lists/
+// @exclude     *://letterboxd.com/people/
+// @exclude     *://letterboxd.com/search/
+// @exclude     *://letterboxd.com/settings/
+// @exclude     *://letterboxd.com/activity/
+// @exclude     *://letterboxd.com/invitations/
+// @exclude     *://letterboxd.com/about/
+// @exclude     *://letterboxd.com/pro/
+// @exclude     *://letterboxd.com/welcome/
+// @exclude     *://letterboxd.com/contact/
+// @exclude     *://letterboxd.com/201\d/
 // @grant       none
 // ==/UserScript==
 
