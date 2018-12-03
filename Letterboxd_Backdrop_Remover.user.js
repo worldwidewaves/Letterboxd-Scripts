@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_Backdrop_Remover.user.js
 // @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     1.3
+// @version     1.4
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -22,9 +22,7 @@
 // @grant       none
 // ==/UserScript==
 
-var containerElt = document.getElementById("content"),
-    backdropElt = document.getElementById("backdrop"),
-    contentElt = backdropElt.getElementsByClassName("content-wrap")[0];
-
-containerElt.replaceChild(contentElt, backdropElt);
-containerElt.classList.remove("has-backdrop");
+if(document.getElementsByClassName("backdrop-container")){
+    document.getElementById("content").className = "site-body";
+    document.body.removeChild(document.getElementsByClassName("backdrop-container")[0]);
+}
