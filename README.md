@@ -1,15 +1,7 @@
-# User scripts for web browsers
+# User scripts [Letterboxd](http://letterboxd.com/)
 
-This repository hosts a few user scripts I've written. These are little pieces of software that extend or modify the behavior or appearance of certain web pages. They need to be used with a user script manager, which is an add-on or extension for web browsers (check the [installation section](#installation)).
+Repository of Letterboxd scripts written by [soyguijarro](https://github.com/soyguijarro) and edited by me. These are little pieces of software that extend or modify the behavior or appearance of certain web pages. They need to be used with a user script manager, which is an add-on or extension for web browsers (check the [installation section](#installation)).
 
-
-## For [Letterboxd](http://letterboxd.com/)
-
-### Letterboxd Average Rating
-
-![Letterboxd Average Rating in action](img/letterboxd_average_rating_screenshot.gif)
-
-Adds the average rating of a film to Letterboxd's film pages. It is presented with star icons above the rating histogram. Hovering over reveals the exact number of stars, as well as the equivalent one-to-ten rating.
 
 ### Letterboxd External Ratings
 
@@ -34,17 +26,6 @@ Adds a little visual summary of biographical info to the bio section of Letterbo
 ![Letterboxd Extra Profile Stats in action](img/letterboxd_extra_profile_stats_screenshot.gif)
 
 Adds the average number of films watched per month and per week in the current year to the statistics displayed at the top of Letterboxd's profile pages. Note that although this is the same data displayed in the *Year in Review* page that is only available to Pro members, this script will work in all profile pages, irrespective of the kind of membership.
-
-
-## For other sites
-
-### Rotten Tomatoes Reviews Redirect
-
-Redirects [Rotten Tomatoes](http://www.rottentomatoes.com)'s movie pages to their corresponding reviews pages, so that you can get to read them right away. Also, once in the reviews page, if you change the type of reviews the selection is saved, and all movie pages will redirect to reviews pages of that specific type until you change it again.
-
-### Flow Subscription Banner Remover
-
-Removes the suscription banner that appears at the top of the [Flow](https://app.getflow.com/) app page.
 
 
 ## Installation
