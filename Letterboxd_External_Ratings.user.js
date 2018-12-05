@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     1.9
+// @version     2.0
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -187,9 +187,10 @@ function createRatingsSection(callback) {
 
     // Set up ratings mode toggle button
     modeToggleElt.className = "box-link-list box-links";
-    modeToggleInnerInnerElt.className = "box-link";
+    modeToggleInnerInnerElt.className = "text-slug tooltip";
     modeToggleInnerInnerElt.href = "#";
     modeToggleInnerInnerElt.textContent = getModeToggleButtonText();
+    modeToggleInnerInnerElt.style.textAlign = "center";
     modeToggleInnerInnerElt.addEventListener("click", toggleRatingsMode, false);
     modeToggleInnerElt.appendChild(modeToggleInnerInnerElt);
 
