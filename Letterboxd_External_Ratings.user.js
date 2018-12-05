@@ -232,7 +232,7 @@ function fillRatingsSection() {
         var filmTitle = document.querySelector("#featured-film-header h1").textContent,
             i= 0;
         for(i; i < filmTitle.length; i++) {
-            filmTitle = filmTitle.replace(" ", "_").replace(" ", "_").replace("’", "").replace(":", "").replace(".", "").replace(";", "");
+            filmTitle = filmTitle.replace(" ", "_").replace(" ", "_").replace(/[&\/\\#,+()$~%.'":;*?!<>{}]/, "");
         }
         var rottenUrl = encodeURI("https://www.rottentomatoes.com/m/" + filmTitle);
 
@@ -242,14 +242,20 @@ function fillRatingsSection() {
             onload: function(res){
                 var parser = new DOMParser(),
                     dom = parser.parseFromString(res.responseText, "text/html"),
-                    rottenRating = 1;
-                rottenRating= dom.getElementsByClassName("meter-value")[0].innerText.replace("%", "");
+                    error= dom.getElementById("mainColumn").innerText;
 
-                if (rottenRating > 0) {
-                    updateRatingData("Tomatometer", rottenRating,
-                    rottenRating / 10, rottenUrl);
-                } else {
+                if(String(error).includes("404")){
                     updateRatingData("Tomatometer", null);
+                }
+                else{
+                    var rottenRating= dom.getElementsByClassName("meter-value")[0].innerText.replace("%", "");
+
+                    if (rottenRating) {
+                        updateRatingData("Tomatometer", rottenRating,
+                                         rottenRating / 10, rottenUrl);
+                    } else {
+                        updateRatingData("Tomatometer", null);
+                    }
                 }
             }
        });
