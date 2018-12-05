@@ -57,9 +57,10 @@ function updateRatingElt(site) {
             ratingInnerElt.removeAttribute("class");
 
             if (localStorage.origRatingsMode === "true") {
-                ratingInnerElt.textContent = "NaN";
+                ratingInnerElt.textContent = "✗";
             } else {
-                ratingInnerElt.textContent = "";
+                ratingInnerElt.className = "emoji";
+                ratingInnerElt.textContent = "✘";
             }
         }
     }
@@ -120,6 +121,14 @@ function createRatingsSection(callback) {
                         height: 14px;\
                         width: 14px;\
                         margin: 0 0;\
+                    }\
+                    section.ratings-external .emoji {\
+                    text-align: right;\
+                    position: absolute;\
+                    font-size: 14px;\
+                    margin-top: -3px;\
+                    right: 0;\
+                    color: #6C3;\
                     }";
 
     function getSpinnerImageUrl() {
