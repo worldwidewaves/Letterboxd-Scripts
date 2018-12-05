@@ -68,7 +68,7 @@ function createRatingsSection(callback) {
         modeToggleInnerInnerElt = document.createElement("a"),
         ratingElt,
         ratingInnerElt,
-        cssRules = "section.ratings-external {\
+        cssRules1 = "section.ratings-external {\
                         margin-top: 20px;\
                     }\
                     section.ratings-external a {\
@@ -82,6 +82,30 @@ function createRatingsSection(callback) {
                         position: absolute;\
                         font-size: 14px;\
                         margin-top: -3px;\
+                        right: 0;\
+                        color: #6C3;\
+                    }\
+                    section.ratings-external span.spinner {\
+                        background: url('" + getSpinnerImageUrl() + "');\
+                        background-size: 14px;\
+                        height: 14px;\
+                        width: 14px;\
+                        margin: 0 0;\
+                    }";
+    var cssRules2 = "section.ratings-external {\
+                        margin-top: 20px;\
+                    }\
+                    section.ratings-external a {\
+                        display: block;\
+                        font-size: 12px;\
+                        line-height: 1.5;\
+                        margin-bottom: 0.5em;\
+                    }\
+                    section.ratings-external span {\
+                        text-align: right;\
+                        position: absolute;\
+                        font-size: 14px;\
+                        margin-top: 0px;\
                         right: 0;\
                         color: #6C3;\
                     }\
@@ -117,6 +141,12 @@ function createRatingsSection(callback) {
         localStorage.origRatingsMode = !(localStorage.origRatingsMode === "true");
         modeToggleInnerInnerElt.textContent = getModeToggleButtonText();
 
+        if(localStorage.origRatingsMode === "true"){
+            GM_addStyle(cssRules1);
+        }
+        else{
+            GM_addStyle(cssRules2);
+        }
         for (var i = 0; i < Object.keys(ratingsData).length; i++) {
             updateRatingElt(Object.keys(ratingsData)[i]);
         }
@@ -152,7 +182,12 @@ function createRatingsSection(callback) {
 
     // Insert section in page
     sidebarElt.insertBefore(ratingsSectionElt, sidebarElt.lastElementChild.nextSibling);
-    GM_addStyle(cssRules);
+    if(localStorage.origRatingsMode === "true"){
+        GM_addStyle(cssRules1);
+    }
+    else{
+        GM_addStyle(cssRules2);
+    }
 
     callback();
 }
@@ -232,7 +267,7 @@ function fillRatingsSection() {
         var filmTitle = document.querySelector("#featured-film-header h1").textContent,
             i= 0;
         for(i; i < filmTitle.length; i++) {
-            filmTitle = filmTitle.replace(" ", "_").replace(" ", "_").replace(/[&\/\\#,+()$~%.'":;*?!<>{}]/, "");
+            filmTitle = filmTitle.replace(/\s/, "_").replace(" ", "_").replace(/[&\/\\#,+()$~%.'":;*?!<>{}]/, "");
         }
         var rottenUrl = encodeURI("https://www.rottentomatoes.com/m/" + filmTitle);
 
@@ -241,11 +276,13 @@ function fillRatingsSection() {
             url: rottenUrl,
             onload: function(res){
                 var parser = new DOMParser(),
-                    dom = parser.parseFromString(res.responseText, "text/html"),
-                    error= dom.getElementById("mainColumn").innerText;
+                    dom = parser.parseFromString(res.responseText, "text/html");
 
-                if(String(error).includes("404")){
-                    updateRatingData("Tomatometer", null);
+                if(dom.getElementById("mainColumn")==null){
+                    var error= dom.getElementById("mainColumn").innerText;
+                    if(String(error).includes("404")){
+                        updateRatingData("Tomatometer", null);
+                    }
                 }
                 else{
                     var rottenRating= dom.getElementsByClassName("meter-value")[0].innerText.replace("%", "");
