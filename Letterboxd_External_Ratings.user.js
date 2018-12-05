@@ -294,13 +294,7 @@ function fillRatingsSection() {
                 var parser = new DOMParser(),
                     dom = parser.parseFromString(res.responseText, "text/html");
 
-                if(dom.getElementById("mainColumn")==null){
-                    var error= dom.getElementById("mainColumn").innerText;
-                    if(String(error).includes("404")){
-                        updateRatingData("Tomatometer", null);
-                    }
-                }
-                else{
+                if(dom.getElementsByClassName("meter-value")[0]){
                     var rottenRating= dom.getElementsByClassName("meter-value")[0].innerText.replace("%", "");
 
                     if (rottenRating) {
@@ -309,6 +303,9 @@ function fillRatingsSection() {
                     } else {
                         updateRatingData("Tomatometer", null);
                     }
+                }
+                else{
+                    updateRatingData("Tomatometer", null);
                 }
             }
        });
