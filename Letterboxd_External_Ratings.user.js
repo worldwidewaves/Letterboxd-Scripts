@@ -55,7 +55,12 @@ function updateRatingElt(site) {
             ratingElt.style.cursor = "pointer";
         } else {
             ratingInnerElt.removeAttribute("class");
-            ratingInnerElt.textContent = "N/A";
+
+            if (localStorage.origRatingsMode === "true") {
+                ratingInnerElt.textContent = "NaN";
+            } else {
+                ratingInnerElt.textContent = "";
+            }
         }
     }
 }
@@ -147,8 +152,10 @@ function createRatingsSection(callback) {
         else{
             GM_addStyle(cssRules2);
         }
+
         for (var i = 0; i < Object.keys(ratingsData).length; i++) {
             updateRatingElt(Object.keys(ratingsData)[i]);
+
         }
     }
 
