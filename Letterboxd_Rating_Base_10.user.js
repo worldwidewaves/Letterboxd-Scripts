@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name        Letterboxd Rating Base 10
-// @namespace   https://github.com/Z41D3L/letterboxd-scripts
+// @namespace   https://github.com/su1c1d3jerk/letterboxd-scripts
 // @description Changes the Letterboxd rating to base 10
-// @copyright   2018, Zaidel
-// @homepageURL https://github.com/Z41D3L/letterboxd-scripts
-// @supportURL  https://github.com/Z41D3L/letterboxd-scripts/issues
-// @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
-// @license     GPLv3; http://www.gnu.org/licenses/gpl.html
+// @homepageURL https://github.com/su1c1d3jerk/letterboxd-scripts
+// @supportURL  https://github.com/su1c1d3jerk/letterboxd-scripts/issues
+// @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_Rating_Base_10.user.js
+// @icon        https://raw.githubusercontent.com/soyguijarro/su1c1d3jerk/master/img/letterboxd_icon.png
+// @license     MIT
 // @version     1.0
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*

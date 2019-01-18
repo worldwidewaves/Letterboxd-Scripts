@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name        Letterboxd External Ratings
-// @namespace   https://github.com/soyguijarro/userscripts
+// @namespace   https://github.com/su1c1d3jerk/letterboxd-scripts
 // @description Adds ratings of film from external sites to film pages
 // @copyright   2015, Ramón Guijarro (http://soyguijarro.com)
-// @homepageURL https://github.com/soyguijarro/userscripts
-// @supportURL  https://github.com/soyguijarro/userscripts/issues
-// @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_External_Ratings.user.js
-// @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
+// @homepageURL https://github.com/su1c1d3jerk/letterboxd-scripts
+// @supportURL  https://github.com/su1c1d3jerk/letterboxd-scripts/issues
+// @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_External_Ratings.user.js
+// @icon        https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     2.0
+// @version     2.1
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -24,9 +24,13 @@
 // @grant       unsafeWindow
 // ==/UserScript==
 
-var ratingsData = { "IMDb": {origRatingMax: 10, isLoaded: false},
-                    "Metascore": {origRatingMax: 100, isLoaded: false},
-                    "Tomatometer": {isLoaded: false} };
+var ratingsData = {"IMDb": {origRatingMax: 10, isLoaded: false},
+                   "Metascore": {origRatingMax: 10, isLoaded: false},
+                   //"User Score": {origRatingMax: 10, isLoaded: false},
+                   "Tomatometer": {origRatingMax: 10, isLoaded: false},
+                   //"Audience Score": {origRatingMax: 10, isLoaded: false},
+                   //"FilmAffinity": {origRatingMax: 10, isLoaded: false},
+                  };
 
 
 function updateRatingElt(site) {
@@ -44,12 +48,20 @@ function updateRatingElt(site) {
                 ratingInnerElt.removeAttribute("class");
                 if(ratingData.origRatingMax){
                     ratingInnerElt.textContent = parseFloat(ratingData.origRating).toFixed(1);
+                    ratingInnerElt.setAttribute("title", "Weighted average of " + ratingData.origRating + " based on " + (ratingData.ratingCounter ? ratingData.ratingCounter : "some") + " ratings");
+
+
                 } else{
                     ratingInnerElt.textContent = parseFloat(ratingData.origRating) + "%";
+                    ratingInnerElt.setAttribute("title", "Weighted average of " + parseFloat(ratingData.origRating) + "% based on " + (ratingData.ratingCounter ? ratingData.ratingCounter : "some") + " ratings");
                 }
             } else {
-                ratingInnerElt.className = "rating rated-" +
-                    Math.round(ratingData.oneToTenRating);
+                if(Math.round(ratingData.oneToTenRating)!=0){
+                    ratingInnerElt.className = "rating rated-" + Math.round(ratingData.oneToTenRating);
+                }
+                else{
+                    ratingInnerElt.className = "rating rated-" + (Math.round(ratingData.oneToTenRating)+1);
+                }
             }
             ratingElt.href = ratingData.url;
             ratingElt.style.cursor = "pointer";
@@ -64,6 +76,9 @@ function updateRatingElt(site) {
             }
         }
     }
+
+
+
 }
 
 function createRatingsSection(callback) {
@@ -217,10 +232,11 @@ function fillRatingsSection() {
         imdbId,
         rottenUrl= "https://www.rottentomatoes.com";
 
-    function updateRatingData(site, origRating, oneToTenRating, url) {
+    function updateRatingData(site, origRating, oneToTenRating, url, ratingCounter) {
         ratingsData[site].origRating = origRating;
         ratingsData[site].oneToTenRating = oneToTenRating;
         ratingsData[site].url = url;
+        ratingsData[site].ratingCounter= ratingCounter;
         ratingsData[site].isLoaded = true;
 
         updateRatingElt(site);
@@ -233,17 +249,24 @@ function fillRatingsSection() {
 
         function getIMDbRating() {
             var imdbRating,
-                imdbRatingElt = ratingsElt.querySelector("span[itemprop=ratingValue]");
+                imdbRatingElt = ratingsElt.querySelector("span[itemprop=ratingValue]"),
+                imdbRatingCount,
+                imdbRatingCountElt = ratingsElt.querySelector("span[itemprop=ratingCount]");
 
-            if (imdbRatingElt) {
+            if (imdbRatingElt && imdbRatingCountElt) {
                 imdbRating = parseFloat((imdbRatingElt.textContent).replace(',', '.'));
-                updateRatingData("IMDb", imdbRating, imdbRating, imdbUrl);
+                imdbRatingCount= (imdbRatingCountElt.textContent).replace(',', '.');
+                updateRatingData("IMDb", imdbRating, imdbRating, imdbUrl, imdbRatingCount);
             } else {
                 updateRatingData("IMDb", null);
             }
         }
 
         function getMetaRating() {
+            //updateRatingData("User Score", null);
+            //updateRatingData("Audience Score", null);
+            //updateRatingData("FilmAffinity", null);
+
             var metaRating,
                 metaRatingElt = ratingsElt.querySelector(".metacriticScore span");
 
@@ -260,10 +283,29 @@ function fillRatingsSection() {
                         dom = parser.parseFromString(res.responseText, "text/html");
                         pageContent = dom.getElementById("main").innerHTML;
                         metaUrl = pageContent.
-                            match(/<a.*href="(.*?)".*>See all \d+ reviews/)[1];
+                        match(/<a.*href="(.*?)".*>See all \d+ reviews/)[1];
 
-                        updateRatingData("Metascore", metaRating,
-                            metaRating, metaUrl);
+                        var metaRatingCount,
+                            metaRatingCountElt = dom.querySelector("span[itemprop=ratingCount]"),
+                            userScoreRating,
+                            userScoreRatingElt= dom.getElementsByClassName("metascore_w user larger movie mixed"),
+                            userScoreRatingCount,
+                            userScoreRatingCountElt;
+
+                        if (metaRatingCountElt) {
+                            metaRatingCount= (metaRatingCountElt.textContent).replace(',', '.');
+                            updateRatingData("Metascore", metaRating, metaRating, metaUrl, metaRatingCount);
+
+                            if(userScoreRatingElt){
+                                userScoreRating= userScoreRatingElt[0].textContent;
+                                updateRatingData("UserScore", userScoreRating, userScoreRating, metaUrl, metaRatingCount);
+                            } else {
+                                updateRatingData("UserScore", null);
+                            }
+
+                        } else {
+                            updateRatingData("Metascore", metaRating, metaRating, metaUrl);
+                        }
                     }
                 });
             } else {
@@ -293,15 +335,24 @@ function fillRatingsSection() {
             url: rottenUrl,
             onload: function(res){
                 var parser = new DOMParser(),
-                    dom = parser.parseFromString(res.responseText, "text/html");
+                    dom = parser.parseFromString(res.responseText, "text/html"),
+                    tomatoRatingCount,
+                    tomatoRatingCountElt = dom.getElementsByClassName("subtle superPageFontColor");
 
-                if(dom.getElementsByClassName("meter-value")[0]){
-                    var rottenRating= dom.getElementsByClassName("meter-value")[0].innerText.replace("%", "");
+                if(dom.getElementsByClassName("meter-value")[0] && tomatoRatingCountElt){
+                    if(tomatoRatingCountElt[1].nextElementSibling){
+                        var rottenRating= dom.getElementsByClassName("meter-value")[0].innerText.replace("%", ""),
+                            tomatoRating,
+                            tomatoRatingElt= dom.getElementById("scoreStats").firstElementChild.innerText;
+                        tomatoRatingCount= (tomatoRatingCountElt[1].nextElementSibling.textContent);
+                        tomatoRating= tomatoRatingElt.match(/\d+\.\d+|\d+\b|\d+(?=\w)/g)[0];
 
-                    if (rottenRating) {
-                        updateRatingData("Tomatometer", rottenRating,
-                                         rottenRating / 10, rottenUrl);
-                    } else {
+                        if (rottenRating) {
+                            updateRatingData("Tomatometer", tomatoRating, tomatoRating, rottenUrl, tomatoRatingCount);
+                        } else {
+                            updateRatingData("Tomatometer", null);
+                        }
+                    } else{
                         updateRatingData("Tomatometer", null);
                     }
                 }

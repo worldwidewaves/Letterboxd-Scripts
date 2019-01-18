@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name        Letterboxd Extra Profile Stats
-// @namespace   https://github.com/soyguijarro/userscripts
+// @namespace   https://github.com/su1c1d3jerk/letterboxd-scripts
 // @description Adds average number of films watched per month and per week to profile pages
 // @copyright   2014+, Ramón Guijarro (http://soyguijarro.com)
-// @homepageURL https://github.com/soyguijarro/userscripts
-// @supportURL  https://github.com/soyguijarro/userscripts/issues
-// @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_Extra_Profile_Stats.user.js
-// @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
+// @homepageURL https://github.com/su1c1d3jerk/letterboxd-scripts
+// @supportURL  https://github.com/su1c1d3jerk/letterboxd-scripts/issues
+// @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_Extra_Profile_Stats.user.js
+// @icon        https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
 // @version     1.6
 // @include     *://letterboxd.com/*/

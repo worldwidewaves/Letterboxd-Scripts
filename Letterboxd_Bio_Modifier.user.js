@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name        Letterboxd Bio Modifier
-// @namespace   https://github.com/soyguijarro/userscripts
+// @namespace   https://github.com/su1c1d3jerk/letterboxd-scripts
 // @description Adds visual bio summary and Wikipedia link to actors and directors pages
 // @copyright   2015, Ramón Guijarro (http://soyguijarro.com)
-// @homepageURL https://github.com/soyguijarro/userscripts
-// @supportURL  https://github.com/soyguijarro/userscripts/issues
-// @updateURL   https://raw.githubusercontent.com/soyguijarro/userscripts/master/Letterboxd_Bio_Modifier.user.js
-// @icon        https://raw.githubusercontent.com/soyguijarro/userscripts/master/img/letterboxd_icon.png
+// @homepageURL https://github.com/su1c1d3jerk/letterboxd-scripts
+// @supportURL  https://github.com/su1c1d3jerk/letterboxd-scripts/issues
+// @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_Bio_Modifier.user.js
+// @icon        https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
 // @version     1.2
 // @include     *://letterboxd.com/director/*
