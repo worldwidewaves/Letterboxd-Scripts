@@ -5,7 +5,7 @@
 // @homepageURL https://github.com/su1c1d3jerk/letterboxd-scripts
 // @supportURL  https://github.com/su1c1d3jerk/letterboxd-scripts/issues
 // @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_Rating_Base_10.user.js
-// @icon        https://raw.githubusercontent.com/soyguijarro/su1c1d3jerk/master/img/letterboxd_icon.png
+// @icon        https://raw.githubusercontent.com/su1c1d3jerk/master/img/letterboxd_icon.png
 // @license     MIT
 // @version     1.0
 // @include     *://letterboxd.com/film/*
