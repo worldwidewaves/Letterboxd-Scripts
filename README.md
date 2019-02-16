@@ -9,6 +9,12 @@ Repository of Letterboxd scripts written by [soyguijarro](https://github.com/soy
 
 Adds ratings from external sites to Letterboxd's film pages ([IMDb](http://www.imdb.com/), [Metacritic](http://www.metacritic.com/) and [Rotten Tomatoes](http://www.rottentomatoes.com/) for now). You can toggle between the original ratings and their five-star scale equivalents. The state of the toggle is saved so all film pages will use whatever mode was last selected until you change it again. Links to the film on the external sites are provided as well.
 
+### Letterboxd Base 10 Rating
+
+![Letterboxd Base 10 Rating in action](img/letterboxd_base10_screenshot.gif)
+
+Changes Letterboxd Ratings from base 5 to base 10 for easier readability.
+
 ### Letterboxd Backdrop Remover
 
 ![Letterboxd Backdrop Remover in action](img/letterboxd_backdrop_remover_screenshot.gif)
@@ -16,6 +22,8 @@ Adds ratings from external sites to Letterboxd's film pages ([IMDb](http://www.i
 Removes the backdrop image present at the top of most Letterboxd's film pages. This allows you to see more information of the film at a glance, reducing the need to scroll.
 
 ### Letterboxd Bio Modifier
+
+**🛑 _WARNING_: This script does not work as of now and is yet to be fixed.**
 
 ![Letterboxd Bio Modifier in action](img/letterboxd_bio_modifier_screenshot.gif)
 
