@@ -50,6 +50,20 @@ Adds the average number of films watched per month and per week in the current y
 These scripts have been tested with [Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/) on Mozilla Firefox and [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) on Google Chrome, but they should work with pretty much any user script manager. If you find something not working properly, please [report the issue](https://github.com/su1c1d3jerk/letterboxd-scripts/issues).
 
 
+
 ## License
 
 These scripts are released under version 3 of the GNU General Public License (GPL v3). The full text of the license is available in the [LICENSE file](LICENSE).
+
+
+
+## Other Letterboxd scripts worth checking out
+
+
+### [Letterboxd Trivia](https://github.com/combatwombat/lb-imdb) by [combatwombat](https://github.com/combatwombat)
+
+
+![Letterboxd Trivia in action](img/letterboxd_trivia_screenshot.gif)
+
+
+Adds IMDb Trivia to Letterboxd.
