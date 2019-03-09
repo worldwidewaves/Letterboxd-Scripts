@@ -7,7 +7,7 @@
 // @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_Rating_Base_10.user.js
 // @icon        https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     MIT
-// @version     1.0
+// @version     2.0
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -18,22 +18,13 @@
 // @exclude     *://letterboxd.com/film/*/fans/*
 // @exclude     *://letterboxd.com/film/*/ratings/*
 // @exclude     *://letterboxd.com/film/*/reviews/*
-// @grant       none
+// @require     http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
+// @require     https://gist.github.com/raw/2625891/waitForKeyElements.js
+// @grant       GM_addStyle
 // ==/UserScript==
 
-const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
-}
-var i;
+waitForKeyElements (".average-rating meta[itemprop='ratingValue']", actionFunction);
 
-for(i= 0; i < 1000; i= i+10){
-    sleep(i).then(() => {
-        var oldRating= document.getElementsByClassName("tooltip display-rating")[0],
-            newRating= document.querySelector("[itemprop~=ratingValue][content]");
-
-        if(oldRating || newRating){
-            oldRating.innerText = parseFloat(Math.round(newRating.content * 10) / 10).toFixed(1);
-            i=1000;
-        }
-    })
+function actionFunction (jNode){
+    jNode.parent().children().html((Math.round(jNode.attr("content") * 10) / 10).toFixed(1));
 }
