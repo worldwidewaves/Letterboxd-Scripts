@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_Bio_Modifier.user.js
 // @icon        https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     1.2
+// @version     1.3
 // @include     *://letterboxd.com/director/*
 // @include     *://letterboxd.com/actor/*
 // @grant       GM_addStyle
@@ -16,57 +16,62 @@
 // ==/UserScript==
 
 var sidebarElt = document.getElementsByClassName("sidebar")[0],
-    bioElt = sidebarElt.getElementsByClassName("tmdb-person-bio")[0],
+    bioElt = sidebarElt.getElementsByClassName("js-tmdb-person-bio")[0],
     tmdbId = bioElt.getAttribute("data-tmdb-id"),
     tmdbBaseUrl = "http://themoviedb.org/person/",
     tmdbUrl = tmdbBaseUrl + tmdbId;
 
 function showBioSummary(res) {
     var dom = new DOMParser().parseFromString(res.responseText, "text/html"),
-        tmdbBirthplaceElt = dom.getElementById("place_of_birth"),
-        tmdbBirthdayElt = dom.getElementById("birthday"),
-        tmdbDeathdayElt = dom.getElementById("deathday"),
-        creditsElt = dom.getElementById("leftCol").getElementsByTagName("p")[0],
-        creditsMatch = creditsElt.textContent.match(/Known Credits: (\d+)/),
-        gotRelevantData = isActualData(tmdbBirthplaceElt) ||
-            isActualData(tmdbBirthdayElt),
+        tmdbBirthplaceElt = dom.getElementsByClassName("facts left_column")[0].childNodes[9].nextElementSibling,
+        tmdbBirthdayElt = dom.getElementsByClassName("facts left_column")[0].childNodes[8].nextElementSibling,
+        tmdbDeathdayElt = dom.getElementsByClassName("facts left_column")[0].childNodes[9].nextElementSibling,
+        creditsElt = dom.getElementsByClassName("facts left_column")[0].childNodes[5].nextElementSibling,
+        creditsMatch = creditsElt.textContent.replace(/Known Credits/g,''),
+        gotRelevantData = isActualData(tmdbBirthplaceElt) || isActualData(tmdbBirthdayElt),
         bioSummaryElt = document.createElement("section"),
         bioSummaryElts,
         bioInnerElt,
         cssRules = "section.panel-text.bio-summary {\
                         border-bottom: 1px solid #456;\
+                        margin-bottom: 10px;\
                     }\
                     section.panel-text.bio-summary p {\
                         padding-left: 25px;\
                         display: block;\
                     }";
 
+    if (!tmdbDeathdayElt.textContent.includes("Day of Death")) {
+        tmdbDeathdayElt = null;
+    } else {
+        tmdbBirthplaceElt = dom.getElementsByClassName("facts left_column")[0].childNodes[11].nextElementSibling;
+    }
+
     function getFormattedDate(date) {
         var monthNum = date.getMonth(),
             dayNum = date.getDate(),
             yearNum = date.getFullYear(),
-            monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         return monthNames[monthNum] + " " + dayNum + ", " + yearNum;
     }
 
     function isActualData(elt) {
-        var data = elt.textContent,
+        var data = elt.textContent.replace(/Birthday/g,'').replace(/Day of Death/g,'').replace(/Place of Birth/g,''),
             exp = /^-$/;
 
         return !(exp.test(data));
     }
 
     function showBirthplace() {
-        var birthplace = tmdbBirthplaceElt.textContent,
+        var birthplace = tmdbBirthplaceElt.textContent.replace(/Place of Birth/g,''),
             birthplaceElt = document.createElement("p"),
             birthplaceIconElt = document.createElement("span");
 
         // Fill element with data and apply styles
         birthplaceElt.classList.add("icon-location");
-        birthplaceElt.textContent = birthplace.replace(/ - /g, ", ");
-        birthplaceIconElt.style.marginLeft = "2px";
+        birthplaceElt.textContent = birthplace.replace(/ - /g, ", ").replace(/Place of Birth/g,'');
+        birthplaceIconElt.style.marginLeft = "0px";
 
         // Insert element in section
         birthplaceElt.appendChild(birthplaceIconElt);
@@ -74,7 +79,8 @@ function showBioSummary(res) {
     }
 
     function showBornDeathDate() {
-        var birthday = new Date(tmdbBirthdayElt.firstElementChild.textContent),
+        var birthday = new Date(tmdbBirthdayElt.textContent.replace(/Birthday/g,'')),
+
             dateElt = document.createElement("p"),
             dateIconElt = document.createElement("span"),
             msPerYear = 1000 * 60 * 60 * 24 * 365,
@@ -85,7 +91,7 @@ function showBioSummary(res) {
         // Fill element with data and apply styles
         if (tmdbDeathdayElt) {  // Person is dead
             // Use death date as reference to calculate age
-            refDate = new Date(tmdbDeathdayElt.firstElementChild.textContent);
+            refDate = new Date(tmdbDeathdayElt.textContent.replace(/Day of Death/g,''));
             date = refDate; // Show death date
 
             dateElt.classList.add("icon-hidden");
@@ -107,12 +113,12 @@ function showBioSummary(res) {
     }
 
     function showNumCredits() {
-        var numCredits = creditsMatch[1],
+        var numCredits = creditsMatch,
             creditsElt = document.createElement("p"),
             creditsIconElt = document.createElement("span");
 
         // Fill element with data and apply styles
-        creditsElt.classList.add("icon-list-all");
+        //creditsElt.classList.add("icon-list-all");
         creditsElt.textContent = numCredits + " known credits";
         creditsIconElt.style.backgroundPosition = "-740px -110px";
 
@@ -148,54 +154,35 @@ function showBioSummary(res) {
     }
 
     // Insert section in page
-    bioInnerElt = bioElt.getElementsByClassName("panel-text condensed")[0] ||
-        bioElt.getElementsByClassName("panel-text")[0];
+    bioInnerElt = bioElt.getElementsByClassName("panel-text condensed")[0] || bioElt.getElementsByClassName("panel-text")[0];
+    bioInnerElt.insertBefore(bioSummaryElt, bioInnerElt.firstElementChild);
 
-    if (bioInnerElt) {  // Already existing bio section
-        bioInnerElt.insertBefore(bioSummaryElt, bioInnerElt.firstElementChild.nextSibling);
-    } else {    // No bio section, add missing header
-        var bioHeaderElt = document.createElement("h2");
-        bioHeaderElt.className = "section-heading";
-        bioHeaderElt.textContent = "Bio";
-
-        bioElt.appendChild(bioHeaderElt);
-        bioElt.appendChild(bioSummaryElt);
-    }
     GM_addStyle(cssRules);
 }
 
 function showWikiLink() {
-    var linksElt = document.getElementsByClassName("bio-link")[0],
+    var linksElt = document.getElementsByClassName("text-link text-footer")[0],
+        linksInnerElt,
+
         headerElt = document.getElementsByClassName("page-header")[0],
-        personNameElt = headerElt.querySelector("h1.inline-heading.prettify em"),
-        wikiLinkElt = document.createElement("li"),
+        personNameElt = headerElt.querySelector("h1.title-1"),
+        personName = personNameElt.textContent.split("\n")[2],
+
+        wikiLinkElt = document.createElement("a"),
         wikiLinkInnerElt = document.createElement("a"),
-        personName = personNameElt.textContent,
+
         wikiBaseUrl = "https://en.wikipedia.org/wiki/",
-        wikiUrl = wikiBaseUrl + personName,
-        linksInnerElt;
+        wikiUrl = wikiBaseUrl + personName;
 
     // Fill element with data and apply styles
-    wikiLinkInnerElt.className = "box-link";
+    wikiLinkInnerElt.className = "micro-button";
     wikiLinkInnerElt.href = wikiUrl;
-    wikiLinkInnerElt.textContent = "Search on Wikipedia";
+    wikiLinkInnerElt.textContent = "Wiki";
     wikiLinkElt.appendChild(wikiLinkInnerElt);
 
     // Insert section in page
-    if (linksElt) { // Already existing link section
-        linksInnerElt = linksElt.getElementsByTagName("ul")[0];
-        linksInnerElt.insertBefore(wikiLinkElt, linksInnerElt.firstElementChild);
-    } else {    // No link section, create first
-        linksElt = document.createElement("section");
-        linksInnerElt = document.createElement("ul");
-        linksElt.className = "section bio-link";
-        linksInnerElt.className = "box-link-list box-links";
-
-        linksInnerElt.appendChild(wikiLinkElt);
-        linksElt.appendChild(linksInnerElt);
-        sidebarElt.insertBefore(linksElt,
-            sidebarElt.getElementsByClassName("progresspanel")[0]);
-    }
+    linksInnerElt = linksElt.getElementsByClassName("micro-button")[0];
+    linksInnerElt.parentElement.appendChild(wikiLinkElt);
 }
 
 GM_xmlhttpRequest({

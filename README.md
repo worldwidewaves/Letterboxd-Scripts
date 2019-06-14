@@ -23,8 +23,6 @@ Removes the backdrop image present at the top of most Letterboxd's film pages. T
 
 ### Letterboxd Bio Modifier
 
-**🛑 _WARNING_: This script does not work as of now and is yet to be fixed.**
-
 ![Letterboxd Bio Modifier in action](img/letterboxd_bio_modifier_screenshot.gif)
 
 Adds a little visual summary of biographical info to the bio section of Letterboxd's actors and directors pages. The summary includes place of birth, birth or death date, age and number of known credits of the person. A button to search for more info on Wikipedia is also added below the bio.
