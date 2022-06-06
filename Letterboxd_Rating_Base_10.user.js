@@ -1,30 +1,44 @@
 // ==UserScript==
 // @name        Letterboxd Rating Base 10
-// @namespace   https://github.com/su1c1d3jerk/letterboxd-scripts
-// @description Changes the Letterboxd rating to base 10
-// @homepageURL https://github.com/su1c1d3jerk/letterboxd-scripts
-// @supportURL  https://github.com/su1c1d3jerk/letterboxd-scripts/issues
-// @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_Rating_Base_10.user.js
-// @icon        https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/img/letterboxd_icon.png
+// @namespace   https://github.com/worldwidewaves/letterboxd-scripts
+// @description Changes the Letterboxd rating to Base 10
+// @homepageURL https://github.com/worldwidewaves/letterboxd-scripts
+// @supportURL  https://github.com/worldwidewaves/letterboxd-scripts/issues
+// @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_Rating_Base_10.user.js
+// @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     MIT
-// @version     2.0
-// @include     *://letterboxd.com/film/*
-// @include     *://letterboxd.com/film/*/crew/*
-// @include     *://letterboxd.com/film/*/studios/*
-// @include     *://letterboxd.com/film/*/genres/*
+// @version     3.0
+// @include     *://letterboxd.com/film/*/
 // @exclude     *://letterboxd.com/film/*/views/*
 // @exclude     *://letterboxd.com/film/*/lists/*
 // @exclude     *://letterboxd.com/film/*/likes/*
 // @exclude     *://letterboxd.com/film/*/fans/*
 // @exclude     *://letterboxd.com/film/*/ratings/*
 // @exclude     *://letterboxd.com/film/*/reviews/*
-// @require     http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
-// @require     https://gist.github.com/raw/2625891/waitForKeyElements.js
+// @exclude     *://letterboxd.com/film/*/members/*
 // @grant       GM_addStyle
 // ==/UserScript==
 
-waitForKeyElements (".average-rating meta[itemprop='ratingValue']", actionFunction);
+{
+    // Wait for elements to load
+    let observer = new MutationObserver(() => {
+        let displayRating = document.getElementsByClassName('tooltip display-rating')[0]
+        let data = document.querySelector('script[type="application/ld+json"]')
 
-function actionFunction (jNode){
-    jNode.parent().children().html((Math.round(jNode.attr("content") * 10) / 10).toFixed(1));
+        if (displayRating && data) {
+            observer.disconnect()
+            setBase10Rating(displayRating, data)
+        }
+    })
+
+    observer.observe(document, { childList: true, subtree: true, attributes: false, characterData: false})
+
+    // Replace rating
+    function setBase10Rating(displayRating, data) {
+        let cleanData = data.innerText.replace(/\*[\s\S]*?\*\/.*/g,'').replaceAll('\n/\n', '')
+        let jsonData = JSON.parse(cleanData)
+        let base10Rating = parseFloat((jsonData.aggregateRating.ratingValue * 2.0).toFixed(1))
+
+        displayRating.innerText = base10Rating
+    }
 }
