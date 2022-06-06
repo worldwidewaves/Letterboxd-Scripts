@@ -7,7 +7,7 @@
 // @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_Rating_Base_10.user.js
 // @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     MIT
-// @version     3.0
+// @version     3.1
 // @include     *://letterboxd.com/film/*/
 // @exclude     *://letterboxd.com/film/*/views/*
 // @exclude     *://letterboxd.com/film/*/lists/*
@@ -37,8 +37,10 @@
     function setBase10Rating(displayRating, data) {
         let cleanData = data.innerText.replace(/\*[\s\S]*?\*\/.*/g,'').replaceAll('\n/\n', '')
         let jsonData = JSON.parse(cleanData)
-        let base10Rating = parseFloat((jsonData.aggregateRating.ratingValue * 2.0).toFixed(1))
+        let base10Rating = jsonData.aggregateRating.ratingValue * 2.0
+        let displayRatingText = displayRating.getAttribute('data-original-title')
 
-        displayRating.innerText = base10Rating
+        displayRating.innerText = parseFloat((base10Rating).toFixed(1))
+        displayRating.setAttribute('data-original-title', displayRatingText.replace(/^(\S+\s+\S+\s+\S+\s+)\S+/, '$1' + base10Rating.toFixed(2)))
     }
 }
