@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     3.2
+// @version     3.3
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -387,11 +387,12 @@ function fillRatingsSection() {
                         tomatoState = ratingSection?.getAttribute("tomatometerstate");
 
                    var audienceRating = ratingSection?.getAttribute("audiencescore"),
+                       audienceRatingOneToTen = ratingSection?.getAttribute("audiencescore") / 10,
                        audienceNumberOfRatings = ratingSection?.children[3].textContent.replace(" Ratings", ""),
                        audienceState = ratingSection?.getAttribute("audiencestate");
 
                     updateRatingData("Tomatometer", tomatoPercentage, tomatoPercentageOneToTen, rottenUrl, tomatoNumberOfRatings, tomatoState);
-                    updateRatingData("Audience Score", audienceRating, audienceRating, rottenUrl, audienceNumberOfRatings, audienceState);
+                    updateRatingData("Audience Score", audienceRating, audienceRatingOneToTen, rottenUrl, audienceNumberOfRatings, audienceState);
                 } else {
                     updateRatingData("Tomatometer", null);
                     updateRatingData("Audience Score", null);
