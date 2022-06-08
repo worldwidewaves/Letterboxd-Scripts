@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     3.1
+// @version     3.2
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -45,7 +45,7 @@ function updateRatingEltIcons(site) {
             case "IMDb": ratingInnerIconElt.src = "https://i.imgur.com/SbFWsRk.png"; break;
             case "Metascore":
                 if (ratingData.origRating > 60) ratingInnerIconElt.src = "https://i.imgur.com/ivFSmyG.png";
-                else if (ratingData.origRating < 60 && ratingData.origRating >= 40) ratingInnerIconElt.src = "https://i.imgur.com/8TtaNaM.png";
+                else if (ratingData.origRating <= 60 && ratingData.origRating >= 40) ratingInnerIconElt.src = "https://i.imgur.com/8TtaNaM.png";
                 else ratingInnerIconElt.src = "https://i.imgur.com/8VB0UU8.png";
                 break;
             case "Userscore":
