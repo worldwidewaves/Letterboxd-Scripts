@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     3.0
+// @version     3.1
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -79,8 +79,12 @@ function updateRatingEltIcons(site) {
         }
         ratingInnerElt.href = ratingData.url;
         ratingInnerElt.style.cursor = "pointer";
-    } else {
-        ratingElts.removeChild(ratingElt);
+        ratingElt.style.marginLeft = "2px";
+        ratingElt.style.marginRight = "2px";
+        ratingElt.firstElementChild.style.marginLeft = "2px";
+        ratingElt.firstElementChild.style.marginRight = "2px";
+        ratingElt.lastElementChild.style.marginLeft = "2px";
+        ratingElt.lastElementChild.style.marginRight = "2px";
     }
 }
 
@@ -468,15 +472,15 @@ function createRatingsSectionIcons() {
                     }\
                     .horizontal-list li {\
                     	display: inline-block;\
-                    	margin-right: 2px;\
-                    	margin-left: 2px;\
+                    	margin-right: 0px;\
+                    	margin-left: 0px;\
                     	vertical-align: middle;\
                     }\
                     .horizontal-list li span {\
                     	height: 14px;\
                     	display: inline-block;\
-                    	margin-right: 2px;\
-                    	margin-left: 2px;\
+                    	margin-right: 0px;\
+                    	margin-left: 0px;\
                     	vertical-align: middle;\
                     }\
                     .horizontal-list li span img {\
