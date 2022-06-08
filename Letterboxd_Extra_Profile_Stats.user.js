@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name        Letterboxd Extra Profile Stats
-// @namespace   https://github.com/su1c1d3jerk/letterboxd-scripts
+// @namespace   https://github.com/worldwidewaves/letterboxd-scripts
 // @description Adds average number of films watched per month and per week to profile pages
 // @copyright   2014+, Ramón Guijarro (http://soyguijarro.com)
-// @homepageURL https://github.com/su1c1d3jerk/letterboxd-scripts
-// @supportURL  https://github.com/su1c1d3jerk/letterboxd-scripts/issues
-// @updateURL   https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/Letterboxd_Extra_Profile_Stats.user.js
-// @icon        https://raw.githubusercontent.com/su1c1d3jerk/letterboxd-scripts/master/img/letterboxd_icon.png
+// @homepageURL https://github.com/worldwidewaves/letterboxd-scripts
+// @supportURL  https://github.com/worldwidewaves/letterboxd-scripts/issues
+// @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_Extra_Profile_Stats.user.js
+// @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     1.6
+// @version     1.7
 // @include     *://letterboxd.com/*/
 // @exclude     *://letterboxd.com/*/*/
 // @exclude     *://letterboxd.com/films/
@@ -26,49 +26,53 @@
 // @grant       none
 // ==/UserScript==
 
-var headerElt = document.getElementById("profile-header"),
-    avatarElt = headerElt.getElementsByClassName("avatar")[0],
-    infoElt = headerElt.getElementsByClassName("profile-person-info")[0],
-    statsElt = headerElt.getElementsByClassName("stats")[0],
-    dataMatch = statsElt.innerHTML.match(/<a href="(.*?)"><strong>(\d+).*This year/),
-    diaryUrl = dataMatch[1],
-    filmsPerYear = dataMatch[2],
-    filmsPerMonth,
-    filmsPerWeek,
-    avgElt,
-    avgInnerElt,
-    numElt,
-    textElt;
+{
+    var headerElt = document.getElementById("profile-header"),
+        avatarElt = headerElt.getElementsByClassName("avatar")[0],
+        infoElt = headerElt.getElementsByClassName("profile-info")[0],
+        statsElt = headerElt.getElementsByClassName("profile-stats")[0],
+        statitsticsElt = headerElt.getElementsByClassName("profile-statistic")[1],
+        diaryUrl = statitsticsElt.getElementsByTagName("a")[0].href,
+        filmsPerYear = statitsticsElt.getElementsByClassName("value")[0].innerText,
+        filmsPerMonth,
+        filmsPerWeek,
+        avgElt,
+        avgInnerElt,
+        numElt,
+        textElt;
 
-// Calculate averages
-filmsPerMonth = (filmsPerYear / (new Date().getMonth() + 1));
-filmsPerWeek = ((filmsPerMonth / 30) * 7);
+    // Calculate averages
+    filmsPerMonth = (filmsPerYear / (new Date().getMonth() + 1));
+    filmsPerWeek = ((filmsPerMonth / 30) * 7);
 
-// Insert calculated averages in page
-[filmsPerWeek, filmsPerMonth].forEach(function (filmsAvg, index) {
-    avgElt = document.createElement("li");
-    avgInnerElt = document.createElement("a");
-    numElt = document.createElement("strong");
-    textElt = document.createElement("span");
+    // Insert calculated averages in page
+    [filmsPerWeek, filmsPerMonth].forEach(function (filmsAvg, index) {
+        avgElt = document.createElement("h4");
+        avgElt.className = "profile-statistic statistic";
+        avgInnerElt = document.createElement("a");
+        numElt = document.createElement("span");
+        numElt.className = "value";
+        textElt = document.createElement("span");
+        textElt.className = "definition";
 
-    // Round to one decimal place and remove trailing zero if present
-    filmsAvg = filmsAvg.toFixed(1).replace(/^(\d+)\.0$/, "$1");
+        // Round to one decimal place and remove trailing zero if present
+        filmsAvg = filmsAvg.toFixed(1).replace(/^(\d+)\.0$/, "$1");
 
-    // Fill element with data
-    avgInnerElt.href = diaryUrl;
-    numElt.textContent = filmsAvg;
-    textElt.textContent = (index === 0) ? "Per week" : "Per month";
+        // Fill element with data
+        avgInnerElt.href = diaryUrl;
+        numElt.textContent = filmsAvg;
+        textElt.textContent = (index === 0) ? "Per week" : "Per month";
 
-    // Build element structure
-    avgInnerElt.appendChild(numElt);
-    avgInnerElt.appendChild(textElt);
-    avgElt.appendChild(avgInnerElt);
+        // Build element structure
+        avgInnerElt.appendChild(numElt);
+        avgInnerElt.appendChild(textElt);
+        avgElt.appendChild(avgInnerElt);
 
-    // Insert element in page
-    statsElt.insertBefore(avgElt, statsElt.children[2]);
-});
+        // Insert element in page
+        statsElt.insertBefore(avgElt, statsElt.children[2]);
+    });
 
-// Prevent overflow in layout
-infoElt.style.width = "auto";
-infoElt.style.maxWidth = headerElt.offsetWidth -
-    avatarElt.offsetWidth - statsElt.offsetWidth + "px";
+    // Prevent overflow in layout
+    infoElt.style.width = "auto";
+    infoElt.style.maxWidth = headerElt.offsetWidth - avatarElt.offsetWidth - infoElt.offsetWidth + "px";
+}
