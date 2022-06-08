@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     2.3
+// @version     3.0
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -26,15 +26,70 @@
 // ==/UserScript==
 
 var ratingsData = {"IMDb": {origRatingMax: 10, isLoaded: false},
-                   "Metascore": {origRatingMax: 10, isLoaded: false},
-                   "Tomatometer": {origRatingMax: 0, isLoaded: false},
+                   "Metascore": {origRatingMax: 100, isLoaded: false},
+                   //"Userscore": {origRatingMax: 10, isLoaded: false},
+                   "Tomatometer": {isLoaded: false},
+                   "Audience Score": {isLoaded: false},
                   };
 
+function updateRatingEltIcons(site) {
+    let ratingData = ratingsData[site];
+
+    var ratingElts = document.querySelectorAll(".horizontal-list li"),
+        ratingElt = ratingElts[Object.keys(ratingsData).indexOf(site)],
+        ratingInnerIconElt = ratingElt.firstElementChild.firstElementChild,
+        ratingInnerElt = ratingElt.lastElementChild.firstElementChild;
+
+    if (ratingData.origRating && ratingData.origRating !== "" && ratingData.origRating !== 0 && !isNaN(ratingData.origRating)) {
+        switch (site) {
+            case "IMDb": ratingInnerIconElt.src = "https://i.imgur.com/SbFWsRk.png"; break;
+            case "Metascore":
+                if (ratingData.origRating > 60) ratingInnerIconElt.src = "https://i.imgur.com/ivFSmyG.png";
+                else if (ratingData.origRating < 60 && ratingData.origRating >= 40) ratingInnerIconElt.src = "https://i.imgur.com/8TtaNaM.png";
+                else ratingInnerIconElt.src = "https://i.imgur.com/8VB0UU8.png";
+                break;
+            case "Userscore":
+                if (ratingData.origRating > 6.0) ratingInnerIconElt.src = "https://i.imgur.com/ivFSmyG.png";
+                else if (ratingData.origRating < 6.0 && ratingData.origRating >= 4.0) ratingInnerIconElt.src = "https://i.imgur.com/8TtaNaM.png";
+                else ratingInnerIconElt.src = "https://i.imgur.com/8VB0UU8.png";
+                break;
+            case "Tomatometer":
+                switch (ratingData.special) {
+                    case "certified-fresh": ratingInnerIconElt.src = "https://i.imgur.com/jyDTNCf.png"; break;
+                    case "fresh": ratingInnerIconElt.src = "https://i.imgur.com/PQ5UUOe.png"; break;
+                    case "rotten": ratingInnerIconElt.src = "https://i.imgur.com/2ZrjnGi.png"; break;
+                    default: break;
+                }
+                break;
+            case "Audience Score":
+                switch (ratingData.special) {
+                    case "upright": ratingInnerIconElt.src = "https://i.imgur.com/d7ebCvG.png"; break;
+                    case "spilled": ratingInnerIconElt.src = "https://i.imgur.com/GfFPwLV.png"; break;
+                    default: break;
+                }
+                break;
+            default: break;
+        }
+        if (ratingData.origRatingMax){
+            ratingInnerElt.textContent = ratingData.origRating;
+            ratingInnerElt.setAttribute("title", "Weighted average of " + ratingData.origRating + " based on " + (ratingData.ratingCounter ? ratingData.ratingCounter : "some") + " ratings");
+        } else {
+            ratingInnerElt.textContent = parseFloat(ratingData.origRating) + "%";
+            ratingInnerElt.setAttribute("title", "Weighted average of " + parseFloat(ratingData.origRating) + "% based on " + (ratingData.ratingCounter ? ratingData.ratingCounter : "some") + " ratings");
+        }
+        ratingInnerElt.href = ratingData.url;
+        ratingInnerElt.style.cursor = "pointer";
+    } else {
+        ratingElts.removeChild(ratingElt);
+    }
+}
+
 function updateRatingElt(site) {
+    let ratingData = ratingsData[site];
+
     var ratingElts = document.querySelectorAll("section.ratings-external a"),
         ratingElt = ratingElts[Object.keys(ratingsData).indexOf(site)],
-        ratingInnerElt = ratingElt.firstElementChild,
-        ratingData = ratingsData[site];
+        ratingInnerElt = ratingElt.firstElementChild;
 
     // If data loads, remove loading icon
     if (ratingData.isLoaded) {
@@ -44,7 +99,7 @@ function updateRatingElt(site) {
             if (localStorage.origRatingsMode === "true") {
                 ratingInnerElt.removeAttribute("class");
                 if (ratingData.origRatingMax){
-                    ratingInnerElt.textContent = parseFloat(ratingData.origRating).toFixed(1);
+                    ratingInnerElt.textContent = ratingData.origRating;
                     ratingInnerElt.setAttribute("title", "Weighted average of " + ratingData.origRating + " based on " + (ratingData.ratingCounter ? ratingData.ratingCounter : "some") + " ratings");
                 } else {
                     ratingInnerElt.textContent = parseFloat(ratingData.origRating) + "%";
@@ -71,7 +126,7 @@ function updateRatingElt(site) {
     }
 }
 
-function createRatingsSection(callback) {
+function createRatingsSection() {
     var sidebarElt = document.getElementsByClassName("sidebar")[0],
         ratingsSectionElt = document.createElement("section"),
         modeToggleElt = document.createElement("ul"),
@@ -175,6 +230,8 @@ function createRatingsSection(callback) {
 
     // Set up section to be inserted in page
     ratingsSectionElt.className = "section ratings-external";
+    ratingsSectionElt.id = "external-ratings";
+    if (localStorage.sectionMode != "list") ratingsSectionElt.style.display = "none";
 
     // Set up section elements that will contain ratings
     for (var i = 0; i < Object.keys(ratingsData).length; i++) {
@@ -210,8 +267,6 @@ function createRatingsSection(callback) {
     else{
         GM_addStyle(cssRules2);
     }
-
-    callback();
 }
 
 function fillRatingsSection() {
@@ -222,14 +277,16 @@ function fillRatingsSection() {
         imdbId,
         rottenUrl= "https://www.rottentomatoes.com";
 
-    function updateRatingData(site, origRating, oneToTenRating, url, ratingCounter) {
+    function updateRatingData(site, origRating, oneToTenRating, url, ratingCounter, special) {
         ratingsData[site].origRating = origRating;
         ratingsData[site].oneToTenRating = oneToTenRating;
         ratingsData[site].url = url;
-        ratingsData[site].ratingCounter= ratingCounter;
+        ratingsData[site].ratingCounter = ratingCounter;
         ratingsData[site].isLoaded = true;
+        ratingsData[site].special = special
 
         updateRatingElt(site);
+        updateRatingEltIcons(site);
     }
 
     function getIMDbAndMetaRatings(res) {
@@ -254,7 +311,7 @@ function fillRatingsSection() {
                 metaRatingElt = dom.querySelector(".score-meta");
 
             if (metaRatingElt) {
-                metaRating = parseFloat(metaRatingElt.textContent)/10;
+                metaRating = parseInt(metaRatingElt.textContent);
 
                 GM_xmlhttpRequest({
                     method: "GET",
@@ -277,7 +334,7 @@ function fillRatingsSection() {
 
                         if (metaRatingCountElt) {
                             metaRatingCount = (metaRatingCountElt.textContent).replace(',', '.');
-                            updateRatingData("Metascore", metaRating, metaRating, metaUrl, metaRatingCount);
+                            updateRatingData("Metascore", metaRating, (metaRating/10.0).toFixed(0), metaUrl, metaRatingCount);
                             /*
                             if (userScoreRatingElt && userScoreRatingElt[0]) { //! user scores are no longer in the critics section of IMDb
                                 userScoreRating = userScoreRatingElt[0].textContent;
@@ -287,7 +344,7 @@ function fillRatingsSection() {
                             }
                             */
                         } else {
-                            updateRatingData("Metascore", metaRating, metaRating, metaUrl);
+                            updateRatingData("Metascore", metaRating, (metaRating/10.0).toFixed(0), metaUrl);
                         }
                     }
                 });
@@ -318,13 +375,22 @@ function fillRatingsSection() {
 
                 if (data) {
                     var dataJSON = JSON.parse(data.innerText),
-                        tomatoPercentage = dataJSON.aggregateRating.ratingValue,
-                        tomatoPercentageOneToTen = tomatoPercentage / 10,
-                        tomatoNumberOfRatings = dataJSON.aggregateRating.ratingCount;
+                        ratingSection = dom.getElementById("topSection")?.children[0]?.children[1];
 
-                    updateRatingData("Tomatometer", tomatoPercentage, tomatoPercentageOneToTen, rottenUrl, tomatoNumberOfRatings);
+                    var tomatoPercentage = dataJSON.aggregateRating.ratingValue,
+                        tomatoPercentageOneToTen = tomatoPercentage / 10,
+                        tomatoNumberOfRatings = dataJSON.aggregateRating.ratingCount,
+                        tomatoState = ratingSection?.getAttribute("tomatometerstate");
+
+                   var audienceRating = ratingSection?.getAttribute("audiencescore"),
+                       audienceNumberOfRatings = ratingSection?.children[3].textContent.replace(" Ratings", ""),
+                       audienceState = ratingSection?.getAttribute("audiencestate");
+
+                    updateRatingData("Tomatometer", tomatoPercentage, tomatoPercentageOneToTen, rottenUrl, tomatoNumberOfRatings, tomatoState);
+                    updateRatingData("Audience Score", audienceRating, audienceRating, rottenUrl, audienceNumberOfRatings, audienceState);
                 } else {
                     updateRatingData("Tomatometer", null);
+                    updateRatingData("Audience Score", null);
                 }
             }
        });
@@ -352,5 +418,121 @@ function fillRatingsSection() {
     }
 }
 
+function createConfigMenu() {
+    let observer = new MutationObserver(() => {
+        if (document.getElementsByClassName("section ratings-histogram-chart")[0]) {
+            observer.disconnect()
+
+            let ratingTitleElt = document.getElementsByClassName("section ratings-histogram-chart")[0].children[0];
+            let gear = document.createElement("a");
+            gear.style.color = "#667788";
+            gear.style.cursor = "pointer";
+            gear.onmouseenter = function (e) {
+                e.target.style.color = "#40BCF4";
+            }
+            gear.onmouseleave = function (e) {
+                e.target.style.color = "#667788";
+            }
+            gear.onclick = function (e) {
+                let listRatings = document.getElementById("external-ratings");
+                let iconRatings = document.getElementById("external-ratings-icons");
+                if (localStorage.sectionMode == "list") {
+                    iconRatings.style.display = "block";
+                    listRatings.style.display = "none";
+                    localStorage.sectionMode = "icons";
+                } else {
+                    iconRatings.style.display = "none";
+                    listRatings.style.display = "block";
+                    localStorage.sectionMode = "list";
+                }
+            }
+            gear.innerText = "⚙";
+            ratingTitleElt.appendChild(gear);
+        }
+    })
+
+    observer.observe(document, { childList: true, subtree: true, attributes: false, characterData: false})
+}
+
+function createRatingsSectionIcons() {
+    let cssRules = "section.ratings-external-icons {\
+                        margin-top: 20px;\
+                    }\
+                    .table {\
+                    	display: table;\
+                    	margin: 0 auto;\
+                    }\
+                    .horizontal-list {\
+                    	text-align: center;\
+                    	list-style: none;\
+                    }\
+                    .horizontal-list li {\
+                    	display: inline-block;\
+                    	margin-right: 2px;\
+                    	margin-left: 2px;\
+                    	vertical-align: middle;\
+                    }\
+                    .horizontal-list li span {\
+                    	height: 14px;\
+                    	display: inline-block;\
+                    	margin-right: 2px;\
+                    	margin-left: 2px;\
+                    	vertical-align: middle;\
+                    }\
+                    .horizontal-list li span img {\
+                    	height: 100%;\
+                    	width: 100%;\
+                    	object-fit: contain;\
+                    }\
+                    .horizontal-list li span a {\
+                    	display: block;\
+                        font-size: 12px;\
+                        margin-bottom: 5em;\
+                    }";
+    GM_addStyle(cssRules);
+
+    let sidebarElt = document.getElementsByClassName("sidebar")[0];
+    let ratingsSectionElt = document.createElement("section");
+
+    // Set up section to be inserted in page
+    ratingsSectionElt.className = "section ratings-external-icons";
+    ratingsSectionElt.id = "external-ratings-icons";
+    if (localStorage.sectionMode != "icons") ratingsSectionElt.style.display = "none";
+
+    // Set up section elements that will contain ratings
+    let ratingTable = document.createElement("div");
+    ratingTable.className = "table";
+    ratingsSectionElt.appendChild(ratingTable);
+
+    let horizontalList = document.createElement("ul");
+    horizontalList.className = "horizontal-list";
+    ratingTable.appendChild(horizontalList);
+
+    for (var i = 0; i < Object.keys(ratingsData).length; i++) {
+        let ratingElt = document.createElement("li");
+        horizontalList.appendChild(ratingElt);
+        ratingElt.style.cursor = "default";
+
+        let iconElt = document.createElement("span");
+        ratingElt.appendChild(iconElt)
+
+        let iconFr = document.createElement("img");
+        iconElt.appendChild(iconFr)
+
+        let ratingTextElt = document.createElement("span");
+        ratingElt.appendChild(ratingTextElt)
+
+        let ratingTextEltFr = document.createElement("a");
+        ratingTextElt.appendChild(ratingTextEltFr)
+    }
+
+    // Insert section in page
+    sidebarElt.insertBefore(ratingsSectionElt, sidebarElt.lastElementChild.nextSibling);
+}
+
 localStorage.origRatingsMode = (localStorage.origRatingsMode || true);
-createRatingsSection(fillRatingsSection);
+localStorage.sectionMode = (localStorage.sectionMode || "icons");
+createConfigMenu();
+createRatingsSection();
+createRatingsSectionIcons();
+fillRatingsSection();
