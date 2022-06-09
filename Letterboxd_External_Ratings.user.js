@@ -8,7 +8,7 @@
 // @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_External_Ratings.user.js
 // @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     3.3
+// @version     3.4
 // @include     *://letterboxd.com/film/*
 // @include     *://letterboxd.com/film/*/crew/*
 // @include     *://letterboxd.com/film/*/studios/*
@@ -27,7 +27,7 @@
 
 var ratingsData = {"IMDb": {origRatingMax: 10, isLoaded: false},
                    "Metascore": {origRatingMax: 100, isLoaded: false},
-                   //"Userscore": {origRatingMax: 10, isLoaded: false},
+                   "Userscore": {origRatingMax: 10, isLoaded: false},
                    "Tomatometer": {isLoaded: false},
                    "Audience Score": {isLoaded: false},
                   };
@@ -44,13 +44,16 @@ function updateRatingEltIcons(site) {
         switch (site) {
             case "IMDb": ratingInnerIconElt.src = "https://i.imgur.com/SbFWsRk.png"; break;
             case "Metascore":
-                if (ratingData.origRating > 60) ratingInnerIconElt.src = "https://i.imgur.com/ivFSmyG.png";
-                else if (ratingData.origRating <= 60 && ratingData.origRating >= 40) ratingInnerIconElt.src = "https://i.imgur.com/8TtaNaM.png";
-                else ratingInnerIconElt.src = "https://i.imgur.com/8VB0UU8.png";
+                if (ratingData.special == "must-see") ratingInnerIconElt.src = "https://i.imgur.com/qu572hE.png";
+                else {
+                    if (ratingData.origRating > 60) ratingInnerIconElt.src = "https://i.imgur.com/m6dwyvg.png";
+                    else if (ratingData.origRating <= 60 && ratingData.origRating >= 40) ratingInnerIconElt.src = "https://i.imgur.com/AlL5EYt.png";
+                    else ratingInnerIconElt.src = "https://i.imgur.com/fW3ZsXC.png";
+                }
                 break;
             case "Userscore":
                 if (ratingData.origRating > 6.0) ratingInnerIconElt.src = "https://i.imgur.com/ivFSmyG.png";
-                else if (ratingData.origRating < 6.0 && ratingData.origRating >= 4.0) ratingInnerIconElt.src = "https://i.imgur.com/8TtaNaM.png";
+                else if (ratingData.origRating <= 6.0 && ratingData.origRating >= 4.0) ratingInnerIconElt.src = "https://i.imgur.com/8TtaNaM.png";
                 else ratingInnerIconElt.src = "https://i.imgur.com/8VB0UU8.png";
                 break;
             case "Tomatometer":
@@ -81,10 +84,10 @@ function updateRatingEltIcons(site) {
         ratingInnerElt.style.cursor = "pointer";
         ratingElt.style.marginLeft = "2px";
         ratingElt.style.marginRight = "2px";
-        ratingElt.firstElementChild.style.marginLeft = "2px";
-        ratingElt.firstElementChild.style.marginRight = "2px";
-        ratingElt.lastElementChild.style.marginLeft = "2px";
-        ratingElt.lastElementChild.style.marginRight = "2px";
+        ratingElt.firstElementChild.style.marginLeft = "1px";
+        ratingElt.firstElementChild.style.marginRight = "1px";
+        ratingElt.lastElementChild.style.marginLeft = "1px";
+        ratingElt.lastElementChild.style.marginRight = "1px";
     }
 }
 
@@ -329,31 +332,37 @@ function fillRatingsSection() {
                         metaUrl = pageContent.
                         match(/<a.*href="(.*?)".*>See all \d+ reviews/)[1];
 
-                        var metaRatingCount,
-                            metaRatingCountElt = dom.querySelector("span[itemprop=ratingCount]"),
-                            userScoreRating,
-                            userScoreRatingElt = dom.getElementsByClassName("metascore_w user larger movie mixed"),
-                            userScoreRatingCount,
-                            userScoreRatingCountElt;
+                        var metaRatingCountElt = dom.querySelector("span[itemprop=ratingCount]"),
+                            metaRatingCount = (metaRatingCountElt?.textContent)?.replace(',', '.');
 
-                        if (metaRatingCountElt) {
-                            metaRatingCount = (metaRatingCountElt.textContent).replace(',', '.');
-                            updateRatingData("Metascore", metaRating, (metaRating/10.0).toFixed(0), metaUrl, metaRatingCount);
-                            /*
-                            if (userScoreRatingElt && userScoreRatingElt[0]) { //! user scores are no longer in the critics section of IMDb
-                                userScoreRating = userScoreRatingElt[0].textContent;
-                                updateRatingData("UserScore", userScoreRating, userScoreRating, metaUrl, metaRatingCount);
-                            } else {
-                                updateRatingData("UserScore", null);
-                            }
-                            */
+                        if (metaUrl) {
+                            GM_xmlhttpRequest({
+                                method: "GET",
+                                url: metaUrl,
+                                onload: function (res) {
+                                    dom = parser.parseFromString(res.responseText, "text/html");
+
+                                    var userScoreRating = dom.getElementsByClassName("metascore_w user larger movie")[0]?.textContent,
+                                        userScoreRatingCount = dom.getElementsByClassName("based_on")[1]?.textContent?.replace("based on ", "").replace(" Ratings", ""),
+                                        metaMustSee = (dom.getElementsByClassName("must-see product")[0] != null) ? "must-see" : null;
+
+                                    updateRatingData("Metascore", metaRating, (metaRating/10.0).toFixed(0), metaUrl, metaRatingCount, metaMustSee);
+                                    if (userScoreRating) {
+                                        updateRatingData("Userscore", userScoreRating, userScoreRating, metaUrl, userScoreRatingCount);
+                                    } else {
+                                        updateRatingData("Userscore", null);
+                                    }
+                                }
+                            });
                         } else {
-                            updateRatingData("Metascore", metaRating, (metaRating/10.0).toFixed(0), metaUrl);
+                            updateRatingData("Metascore", metaRating, (metaRating/10.0).toFixed(0), metaUrl, metaRatingCount);
+                            updateRatingData("Userscore", null);
                         }
                     }
                 });
             } else {
                 updateRatingData("Metascore", null);
+                updateRatingData("Userscore", null);
             }
         }
 
