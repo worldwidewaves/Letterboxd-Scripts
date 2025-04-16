@@ -2,13 +2,13 @@
 // @name        Letterboxd Extra Profile Stats
 // @namespace   https://github.com/worldwidewaves/letterboxd-scripts
 // @description Adds average number of films watched per month and per week to profile pages
-// @copyright   2014+, Ramón Guijarro (http://soyguijarro.com)
+// @copyright   2014+, Ramón Guijarro (http://soyguijarro.com), N190392
 // @homepageURL https://github.com/worldwidewaves/letterboxd-scripts
 // @supportURL  https://github.com/worldwidewaves/letterboxd-scripts/issues
 // @updateURL   https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/Letterboxd_Extra_Profile_Stats.user.js
 // @icon        https://raw.githubusercontent.com/worldwidewaves/letterboxd-scripts/master/img/letterboxd_icon.png
 // @license     GPLv3; http://www.gnu.org/licenses/gpl.html
-// @version     1.7
+// @version     1.8
 // @include     *://letterboxd.com/*/
 // @exclude     *://letterboxd.com/*/*/
 // @exclude     *://letterboxd.com/films/
@@ -27,13 +27,12 @@
 // ==/UserScript==
 
 {
-    var headerElt = document.getElementById("profile-header"),
-        avatarElt = headerElt.getElementsByClassName("avatar")[0],
-        infoElt = headerElt.getElementsByClassName("profile-info")[0],
-        statsElt = headerElt.getElementsByClassName("profile-stats")[0],
-        statitsticsElt = headerElt.getElementsByClassName("profile-statistic")[1],
+    var avatarElt = document.getElementsByClassName("profile-avatar")[0],
+        infoElt = document.getElementsByClassName("profile-info")[0],
+        statsElt = document.getElementsByClassName("profile-stats")[0],
+        statitsticsElt = document.getElementsByClassName("profile-statistic")[1],
         diaryUrl = statitsticsElt.getElementsByTagName("a")[0].href,
-        filmsPerYear = statitsticsElt.getElementsByClassName("value")[0].innerText,
+        filmsPerYear = parseInt(statitsticsElt.getElementsByClassName("value")[0].textContent, 10),
         filmsPerMonth,
         filmsPerWeek,
         avgElt,
@@ -42,6 +41,7 @@
         textElt;
 
     // Calculate averages
+    console.log("Followers:", filmsPerYear);
     filmsPerMonth = (filmsPerYear / (new Date().getMonth() + 1));
     filmsPerWeek = ((filmsPerMonth / 30) * 7);
 
@@ -74,5 +74,5 @@
 
     // Prevent overflow in layout
     infoElt.style.width = "auto";
-    infoElt.style.maxWidth = headerElt.offsetWidth - avatarElt.offsetWidth - infoElt.offsetWidth + "px";
+    infoElt.style.maxWidth = document.offsetWidth - avatarElt.offsetWidth - infoElt.offsetWidth + "px";
 }
