@@ -41,7 +41,6 @@
         textElt;
 
     // Calculate averages
-    console.log("Followers:", filmsPerYear);
     filmsPerMonth = (filmsPerYear / (new Date().getMonth() + 1));
     filmsPerWeek = ((filmsPerMonth / 30) * 7);
 
